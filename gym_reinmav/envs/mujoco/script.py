@@ -14,12 +14,12 @@ def run():
 
     W=20
     D=20
-    NW = 15
-    ND = 15
+    NW = 10
+    ND = 10
 
     for floor in worldbody:
         # floor.attrib['size']=str(W/2)+' '+str(D/2)+' .2'
-        floor.attrib['size']='100 100 .2'
+        floor.attrib['size']='10 10 .2'
     #    floor.attrib['pos']=str(W/2)+' '+str(D/2)+' 0'
         break
 
@@ -29,8 +29,8 @@ def run():
     for obst in obsts:
         new = ET.SubElement(worldbody, 'geom')
         new.set('type','box')
-        new.set('pos',str(obst[0])+' '+str(obst[1])+' 0')
-        new.set('size','0.2 0.2 2.5')
+        new.set('pos',str(obst[0])+' '+str(obst[1])+' 1.25')
+        new.set('size','0.2 0.2 1.25')
         new.set('rgba','0.7 0.3 0.3 1')
 
     tree.write(cwd_path+'assets/quadrotor_hovering_test.xml') 

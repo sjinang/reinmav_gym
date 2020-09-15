@@ -43,7 +43,7 @@ class MujocoQuadEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         xml_path = os.path.join(os.path.dirname(__file__), "./assets", xml_name)
 
         utils.EzPickle.__init__(self)
-        mujoco_env.MujocoEnv.__init__(self, xml_path, 2)
+        mujoco_env.MujocoEnv.__init__(self, xml_path, 6)
 
     def step(self, a):
         reward = 0

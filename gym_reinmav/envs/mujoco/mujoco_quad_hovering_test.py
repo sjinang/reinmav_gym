@@ -68,11 +68,11 @@ class MujocoQuadHoveringEnv_test(MujocoQuadEnv):
         self.set_state(qpos, qvel)
         
         script.run()
-        self.__init__()
+        # self.__init__()
 
         return self._get_obs()
     
     def viewer_setup(self):
         self.viewer.trackbodyid=0
-        self.viewer.cam.distance = self.model.stat.extent * 0.8
+        self.viewer.cam.distance = self.model.stat.extent * 2
 
