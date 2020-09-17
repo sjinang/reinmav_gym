@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os,sys, time
 
-cwd_path = '/home/sjinang/reinmav-gym/gym_reinmav/envs/mujoco'+'/'
+cwd_path = '/home/jinx/reinmav_gym/gym_reinmav/envs/mujoco'+'/'
 
 def run():
     
@@ -14,8 +14,8 @@ def run():
 
     W=20
     D=20
-    NW = 10
-    ND = 10
+    NW = 4
+    ND = 4
 
     for floor in worldbody:
         # floor.attrib['size']=str(W/2)+' '+str(D/2)+' .2'
