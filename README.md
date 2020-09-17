@@ -1,6 +1,6 @@
-## Might have to change cwd_path in gym_reinmav/envs/mujoco/script.run according to your file location.
 ## check out new.py for playing with controller
-### Keys are w,s,a,d,q,e and make sure to press them in the tkinter window
+### might have to change cwd_path in gym_reinmav/envs/mujoco/script.run according to your file location.
+### keys are w,s,a,d,q,e and make sure to press them in the tkinter window
 _
 
 
