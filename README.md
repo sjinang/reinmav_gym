@@ -1,3 +1,9 @@
+## Might have to change cwd_path in gym_reinmav/envs/mujoco/script.run according to your file location.
+## check out new.py for playing with controller
+### Keys are w,s,a,d,q,e and make sure to press them in the tkinter window
+_
+
+
 # reinmav-gym
 [![Build Status](https://travis-ci.org/ethz-asl/reinmav-gym.png?branch=master)](https://travis-ci.org/ethz-asl/reinmav-gym)
 
