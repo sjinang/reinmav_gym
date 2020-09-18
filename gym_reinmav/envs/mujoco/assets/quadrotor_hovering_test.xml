@@ -1,12 +1,19 @@
 <mujoco model="quadrotor0">
 	<compiler coordinate="local" inertiafromgeom="true" />
 	<option density="1" gravity="0 0 -9.81" timestep="0.01" viscosity="1e-5" />
-	<visual> <map znear="0.00009" /> </visual>
+	
+	
+	<visual> <map znear="0.00005" /> </visual>
+
 	<worldbody>
 		<geom conaffinity="1" condim="3" name="floor" pos="0 0 0" rgba="0.75 0.75 0.75 1" size="10 10 .2" type="plane" />
 		<body name="quadrotor" pos="0 0 2">
-			<camera fovy="35" mode="fixed" name="onbody_cam" pos="0 0.08 0.05" xyaxes="1 0 0 0 0 1" />
+			
+			<camera fovy="35" mode="fixed" name="onbodycam_0" pos="0 0.06 0.05" xyaxes="1 0 0 0 0 1" />
+			
 			<geom mass=".1" name="core" pos="0 0 0" quat="1. 0. 0. 0" rgba="0.3 0.3 0.8 1" size="0.06 0.035 0.025" type="box" />
+
+			<site name="site_sens_0" pos="0 0.16 0" size="0.001 0.001 0.001" type="box" zaxis="0. 1. 0." />
 
 			<geom mass=".025" name="a00" pos=".071 0.071 0.0" quat=".924 0.0 0.0 0.383" rgba="0.3 0.3 0.8 1" size="0.05 0.01 0.0025" type="box" />
 			<geom mass=".025" name="a10" pos=".071 -0.071 0.0" quat=".383 0.0 0.0 0.924" rgba="0.3 0.3 0.8 1" size="0.05 0.01 0.0025" type="box" />
@@ -32,9 +39,14 @@
 			<site name="qcY" pos="0.0 0.1 0.0" quat=" 0.707  0.0  0.0    0.707" rgba="0 1 0 1" size="0.1 0.005 0.005" type="box" />
 			<site name="qcZ" pos="0.0 0.0 0.1" quat="-0.707  0.0  0.707  0." rgba="0 0 1 1" size="0.1 0.005 0.005" type="box" />
 		</body>
+		
 		<light cutoff="100" diffuse="1 1 1" dir="0 0 -1" directional="true" exponent="1" pos="0 0 10" specular=".1 .1 .1" />
 		<light cutoff="100" diffuse="1 1 1" dir="0 0 1" directional="true" exponent="1" pos="0 0 0.25" specular=".1 .1 .1" />
-	<geom pos="-7.561826221773395 -8.985182413581732 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-9.41565147459829 -4.937901307894023 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-8.516727123811078 1.4292545412268298 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-9.989688832479354 7.393861078465666 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-1.6728873328795464 -8.610751897242116 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-2.5792821852275862 -4.719269121810698 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-2.042800777562097 3.107178256120748 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-1.9789634950078798 9.156019571239538 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="3.68607272491912 -5.113182542957938 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="3.2775164204589995 -3.801626622405267 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="0.31658473524948494 4.738812226495319 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="3.275014238118172 9.144977251654153 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="5.439594993487054 -9.088197786753119 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="6.466819129781593 -2.4831142114631204 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="6.730503436111731 4.443952505538894 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="6.013527915547393 8.554679165318712 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /></worldbody>
+
+	<geom pos="-5.472713211508296 -7.658383935919219 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-5.878572418308069 -4.402516380255755 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-6.088021030154398 4.786663769978806 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-8.123172975486842 9.551228100649203 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-4.03167932023742 -6.855209969645557 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-1.7015171686577268 -4.501506586459923 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-0.29352550144867884 4.350446028688752 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="-2.1992451988639528 9.811322927783213 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="4.070129788096665 -5.82148714702774 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="2.75967845016347 -4.867344602785623 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="4.19005164395119 1.742448864265786 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="1.173771414802534 5.781180224033361 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="9.033388788238337 -6.8037445944036214 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="6.047979475730612 -3.8181260758829776 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="9.380106943682282 3.9579521377727116 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /><geom pos="9.419197702405139 5.369362357047896 1.25" rgba="0.7 0.3 0.3 1" size="0.2 0.2 1.25" type="box" /></worldbody>
+
+	<sensor> <rangefinder name="sens_0" site="site_sens_0" /> </sensor>
+
     <actuator>
         <motor ctrllimited="true" ctrlrange="0.0 1.0" gear="0  0. 1. 0. 0. -0.1" site="motor0" />
         <motor ctrllimited="true" ctrlrange="0.0 1.0" gear="0  0. 1. 0. 0.  0.1" site="motor1" />

@@ -46,7 +46,7 @@ class MujocoQuadHoveringEnv_test(MujocoQuadEnv):
     def step(self, a):
         self.do_simulation(self.clip_action(a), self.frame_skip)
         ob = self._get_obs()
-
+        print(self.sim.data.sensordata)
         alive_bonus = 100
         reward = - np.sum(np.square(ob[0:3] - np.array([0.0, 0, 1.0]))) * 10 \
                  - np.sum(np.square(ob[7:] - np.zeros(6))) * 0.1 \

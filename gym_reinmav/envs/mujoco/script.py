@@ -7,7 +7,7 @@ cwd_path = '/home/jinx/reinmav_gym/gym_reinmav/envs/mujoco'+'/'
 
 def run():
     
-    tree = ET.parse(cwd_path+'assets/quadrotor_hovering_copy.xml')
+    tree = ET.parse(cwd_path+'assets/quadrotor_hovering_modified.xml')
     root = tree.getroot()
 
     worldbody = root.find('worldbody')

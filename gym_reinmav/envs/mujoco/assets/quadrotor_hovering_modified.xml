@@ -1,12 +1,19 @@
 <mujoco model="quadrotor0">
 	<compiler inertiafromgeom="true" coordinate="local"/>
 	<option	timestep="0.01" gravity="0 0 -9.81" density="1" viscosity="1e-5" />
-	<visual> <map znear="0.00009" /> </visual>
+	
+	<!-- To prevent camera from cutting/seeing through objects -->
+	<visual> <map znear="0.00005" /> </visual>
+
 	<worldbody>
 		<geom name="floor" pos="0 0 0" size="2 2 .2" type="plane"  conaffinity="1" rgba="0.75 0.75 0.75 1" condim="3"/>
 		<body name="quadrotor" pos="0 0 2" >
-			<camera name="onbody_cam" mode="fixed" pos="0 0.08 0.05" xyaxes="1 0 0 0 0 1" fovy='35'/>
+			
+			<camera name="onbodycam_0" mode="fixed" pos="0 0.06 0.05" xyaxes="1 0 0 0 0 1" fovy='35'/>
+			
 			<geom name="core" type="box" pos="0 0 0" quat = "1. 0. 0. 0" size="0.06 0.035 0.025"  rgba="0.3 0.3 0.8 1" mass = ".1"/>
+
+			<site name="site_sens_0" type="box" pos="0 0.15 0" size="0.001 0.001 0.001" zaxis = "0. 1. 0." />
 
 			<geom name="a00" type="box" pos=".071 0.071 0.0" size="0.05 0.01 0.0025"  quat = ".924 0.0 0.0 0.383" rgba="0.3 0.3 0.8 1" mass = ".025"/>
 			<geom name="a10" type="box" pos=".071 -0.071 0.0" size="0.05 0.01 0.0025"  quat = ".383 0.0 0.0 0.924" rgba="0.3 0.3 0.8 1" mass = ".025"/>
@@ -32,9 +39,14 @@
 			<site name="qcY" type="box" pos="0.0 0.1 0.0" size="0.1 0.005 0.005"  quat = " 0.707  0.0  0.0    0.707"  rgba="0 1 0 1" />
 			<site name="qcZ" type="box" pos="0.0 0.0 0.1" size="0.1 0.005 0.005"  quat = "-0.707  0.0  0.707  0."     rgba="0 0 1 1" />
 		</body>
+		
 		<light cutoff="100" diffuse="1 1 1" dir="0 0 -1" directional="true" exponent="1" pos="0 0 10" specular=".1 .1 .1" />
 		<light cutoff="100" diffuse="1 1 1" dir="0 0 1" directional="true" exponent="1" pos="0 0 0.25" specular=".1 .1 .1" />
+
 	</worldbody>
+
+	<sensor> <rangefinder name="sens_0" site="site_sens_0" /> </sensor>
+
     <actuator>
         <motor ctrllimited="true" ctrlrange="0.0 1.0" gear="0  0. 1. 0. 0. -0.1" site="motor0"/>
         <motor ctrllimited="true" ctrlrange="0.0 1.0" gear="0  0. 1. 0. 0.  0.1" site="motor1"/>

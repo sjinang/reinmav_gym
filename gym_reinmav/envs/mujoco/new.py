@@ -106,7 +106,7 @@ c = 0.73575
 # temp = -np.copy(v)
 # v = np.sort(np.append(temp,v))
 dv = 0.15
-dw = 0.075
+dw = 0.07
 
 while True:
   root.update()
