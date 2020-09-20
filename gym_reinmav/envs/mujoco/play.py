@@ -112,7 +112,6 @@ while True:
   root.update()
   env.step([c]*4)
   env.render()
-
 # for dv in v:
 #   for n in range(3000):
 #     # root.update()

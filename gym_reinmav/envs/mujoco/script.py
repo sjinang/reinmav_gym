@@ -3,11 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os,sys, time
 
-cwd_path = '/home/jinx/reinmav_gym/gym_reinmav/envs/mujoco'+'/'
+cd_path = os.path.dirname(os.path.abspath(__file__))
 
 def run():
     
-    tree = ET.parse(cwd_path+'assets/quadrotor_hovering_modified.xml')
+    tree = ET.parse(cd_path+'/assets/quadrotor_hovering_modified.xml')
     root = tree.getroot()
 
     worldbody = root.find('worldbody')
@@ -33,5 +33,4 @@ def run():
         new.set('size','0.2 0.2 1.25')
         new.set('rgba','0.7 0.3 0.3 1')
 
-    tree.write(cwd_path+'assets/quadrotor_hovering_test.xml') 
-
+    tree.write(cd_path+'/assets/quadrotor_hovering_test.xml') 

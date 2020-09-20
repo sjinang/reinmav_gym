@@ -63,13 +63,13 @@ class MujocoQuadHoveringEnv_test(MujocoQuadEnv):
         return ob, reward, done, {}
 
     def reset_model(self):
+        script.run()
+        self.__init__()
+        
         qpos = self.init_qpos
         qvel = self.init_qvel
         self.set_state(qpos, qvel)
         
-        script.run()
-        # self.__init__()
-
         return self._get_obs()
     
     def viewer_setup(self):
