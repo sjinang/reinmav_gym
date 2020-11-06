@@ -35,15 +35,18 @@ import numpy as np
 import os
 from gym import utils
 from gym.envs.mujoco import mujoco_env
+# from mujoco_goal_env import Mujoco_Env
+from gym_reinmav.envs.mujoco.mujoco_goal_env import Mujoco_Goal_Env
 
 
-class MujocoQuadEnv(mujoco_env.MujocoEnv, utils.EzPickle):
+
+class MujocoQuadEnv(Mujoco_Goal_Env, utils.EzPickle):
     def __init__(self, xml_name="quadrotor_ground.xml"):
 
         xml_path = os.path.join(os.path.dirname(__file__), "./assets", xml_name)
 
         utils.EzPickle.__init__(self)
-        mujoco_env.MujocoEnv.__init__(self, xml_path, 6)
+        Mujoco_Goal_Env.__init__(self, xml_path, 6)
 
     def step(self, a):
         reward = 0
@@ -52,6 +55,16 @@ class MujocoQuadEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         notdone = np.isfinite(ob).all()
         done = not notdone
         return ob, reward, done, {}
+
+    def compute_reward(self, achieved_goal, desired_goal):
+        # Compute distance between goal and the achieved goal.
+        assert achieved_goal.shape == desired_goal.shape
+        d = np.linalg.norm(achieved_goal - desired_goal, axis=-1)
+
+        if self.reward_type == 'sparse':
+            return -(d > self.distance_threshold).astype(np.float32)
+        else:
+            return -d
 
     def clip_action(self, action):
         """
@@ -74,8 +87,11 @@ class MujocoQuadEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # print('*',ob)
         return ob
 
-    def _get_obs(self):
-        return np.concatenate([self.sim.data.qpos, self.sim.data.qvel]).ravel()
+    
+    def _sample_goal(self):
+        goal = self.np_random.uniform(-self.range, self.range, size=3)
+        goal[2] = 2
+        return goal.copy()
 
     def viewer_setup(self):
         v = self.viewer

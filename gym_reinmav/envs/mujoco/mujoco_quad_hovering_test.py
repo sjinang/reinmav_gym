@@ -33,31 +33,55 @@
 # *************************************************************************
 import numpy as np
 import os
-
+from gym import spaces
 from gym_reinmav.envs.mujoco import MujocoQuadEnv
 
 from gym_reinmav.envs.mujoco import script
 script.run()
 
 class MujocoQuadHoveringEnv_test(MujocoQuadEnv):
-    def __init__(self):
+    def __init__(self,range=5,reward_type='cont',threshold=0.5):
+        
+        self.range = range
+        self.reward_type = reward_type
+        self.threshold = threshold
+
         super(MujocoQuadHoveringEnv_test, self).__init__(xml_name="quadrotor_hovering_test.xml")
+        self.action_space = spaces.Box(low=np.array([0, -1.0]), high=np.array([1, 1.0]), dtype=np.float32)
 
-    def step(self, a):
+    def _step(self, a):
         self.do_simulation(self.clip_action(a), self.frame_skip)
-        ob = self._get_obs()
-        print(self.sim.data.sensordata)
-        alive_bonus = 100
-        reward = - np.sum(np.square(ob[0:3] - np.array([0.0, 0, 1.0]))) * 10 \
-                 - np.sum(np.square(ob[7:] - np.zeros(6))) * 0.1 \
-                 - np.sum(np.square(a)) \
-                 + np.sum(a) * 0.1 \
-                 + alive_bonus
+    
+    def step(self, a):
+        dv = 0.15*a[0]
+        dw = 0.25*a[1]
+        c = 0.73575
 
-        notdone = np.isfinite(ob).all() \
-                  and ob[2] > 0.3 \
-                  and abs(ob[0]) < 5.0 \
-                  and abs(ob[1]) < 5.0
+        self._step([c-dv, c+dv, c+dv, c-dv])
+        self._step([c+dv, c-dv, c-dv, c+dv])
+        self._step([c+dv, c-dv, c-dv, c+dv])
+        self._step([c-dv, c+dv, c+dv, c-dv])
+        pos = self.sim.data.qpos
+        vel = self.sim.data.qvel
+        self.set_state(np.array([pos[0],pos[1],2,pos[3],0,0,pos[6]]),np.array([0.0]*6))
+        self.render()
+
+        self._step([c+dw, c-dw, c+dw, c-dw])
+        self._step([c-dw, c+dw, c-dw, c+dw])
+        pos = self.sim.data.qpos
+        vel = self.sim.data.qvel
+        self.set_state(np.array([pos[0],pos[1],2,pos[3],0,0,pos[6]]),np.array([0.0]*6))
+
+        ob = self._get_obs()
+        
+        # print(self.sim.data.sensordata)
+
+        reward = self.compute_reward(ob['achieved_goal'],ob['desired_goal'])
+
+        notdone = np.isfinite(ob['observation']).all() \
+                  and abs(ob['observation'][0]) < 5.0 \
+                  and abs(ob['observation'][1]) < 5.0 \
+                  and abs(reward) > self.threshold 
 
         done = not notdone
         return ob, reward, done, {}
