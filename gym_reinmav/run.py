@@ -12,3 +12,5 @@ while True:
     action = env.action_space.sample()
     # print(action)
     obs, rew, done, info = env.step(action)
+    if done:
+        env.reset()
