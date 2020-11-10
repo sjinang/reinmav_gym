@@ -1,21 +1,13 @@
 from gym.envs.registration import register
 
 register(
-    id='MujocoQuadForce-v0',
-    entry_point='gym_reinmav.envs.mujoco:MujocoQuadEnv',
+    id='MujocoQuadReach-v0',
+    entry_point='gym_reinmav.envs.mujoco:MujocoQuadReachEnv',
 )
 
-register(
-    id='MujocoQuadForce-v1',
-    entry_point='gym_reinmav.envs.mujoco:MujocoQuadHoveringEnv',
-)
 
 register(
-    id='MujocoQuadForce-v2',
-    entry_point='gym_reinmav.envs.mujoco:MujocoQuadHoveringEnv_test',
+    id='MujocoQuadForest-v0',
+    entry_point='gym_reinmav.envs.mujoco:MujocoQuadForestEnv',
 )
 
-register(
-    id='MujocoQuadQuat-v0',
-    entry_point='gym_reinmav.envs.mujoco:MujocoQuadQuaternionEnv',
-)

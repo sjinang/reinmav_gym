@@ -1,3 +1,2 @@
-from gym_reinmav.envs.mujoco.mujoco_quad import MujocoQuadEnv
-from gym_reinmav.envs.mujoco.mujoco_quad_hovering_test import MujocoQuadHoveringEnv_test
-from gym_reinmav.envs.mujoco.mujoco_quad_hovering import MujocoQuadHoveringEnv
+from gym_reinmav.envs.mujoco.mujoco_quad_reach import MujocoQuadReachEnv
+from gym_reinmav.envs.mujoco.mujoco_quad_forest import MujocoQuadForestEnv

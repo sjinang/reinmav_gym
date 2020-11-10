@@ -33,39 +33,10 @@
 # *************************************************************************
 import numpy as np
 import os
+from gym_reinmav.envs.mujoco import MujocoQuadReachEnv
 
-from gym_reinmav.envs.mujoco import MujocoQuadEnv
-
-
-class MujocoQuadHoveringEnv(MujocoQuadEnv):
-    def __init__(self):
-        super(MujocoQuadHoveringEnv, self).__init__(xml_name="quadrotor_hovering.xml")
-
-    def step(self, a):
-        self.last_qpos = self.sim.data.qpos.ravel().copy()
-        
-        self.do_simulation(self.clip_action(a), self.frame_skip)
-        ob = self._get_obs()
-
-        # dx = ob[0] - self.last_qpos[0]
-
-        alive_bonus = 100
-        reward = - np.sum(np.square(np.array([ob[2]]) - np.array([1.0]))) * 10 \
-                 - np.sum(np.square(ob[7:] - np.zeros(6))) * 0.1 \
-                 - np.sum(np.square(a)) \
-                 + np.sum(a) * 0.1 \
-                 + alive_bonus \
-                 - (0.5*abs(ob[0]-ob[1]))
-
-        notdone = np.isfinite(ob).all() \
-                  and ob[2] > 0.3 \
-                  and abs(ob[0]) < 5.0 \
-                  and abs(ob[1]) < 5.0
-
-        done = not notdone
-        
-        return ob, reward, done, {}
+class MujocoQuadForestEnv(MujocoQuadReachEnv):
+    def __init__(self,range=10,reward_type='cont',threshold=0.5):
+        super(MujocoQuadForestEnv, self).__init__(version=1)
     
-    def viewer_setup(self):
-        # self.trackbodyid=-1
-        self.viewer.cam.distance = self.model.stat.extent * 2
+

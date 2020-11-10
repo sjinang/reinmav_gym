@@ -35,25 +35,70 @@ import numpy as np
 import os
 from gym import utils
 from gym.envs.mujoco import mujoco_env
-# from mujoco_goal_env import Mujoco_Env
+from gym import spaces
 from gym_reinmav.envs.mujoco.mujoco_goal_env import Mujoco_Goal_Env
+from gym_reinmav.envs.mujoco import script
 
 
+class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
+    def __init__(self, xml_name="quadrotor_env_modified.xml",version=0,range=10,reward_type='cont',threshold=0.5):
 
-class MujocoQuadEnv(Mujoco_Goal_Env, utils.EzPickle):
-    def __init__(self, xml_name="quadrotor_ground.xml"):
+        self.range = range
+        self.reward_type = reward_type
+        self.threshold = threshold
+        
+        self.seed()
 
+        self.goal = self._sample_goal()
+        script.run(version,self.goal,self.threshold)
+        
         xml_path = os.path.join(os.path.dirname(__file__), "./assets", xml_name)
 
         utils.EzPickle.__init__(self)
         Mujoco_Goal_Env.__init__(self, xml_path, 6)
 
-    def step(self, a):
-        reward = 0
+    def _step(self, a):
         self.do_simulation(self.clip_action(a), self.frame_skip)
+        return self.sim.data.ncon
+    
+    def step(self, a):
+        dv = 0.15*a[0]
+        dw = 0.25*a[1]
+        c = 0.73575
+        
+        prev_ncon = self.sim.data.ncon
+        con = []
+
+        con.append(self._step([c-dv, c+dv, c+dv, c-dv]))
+        con.append(self._step([c+dv, c-dv, c-dv, c+dv]))
+        con.append(self._step([c+dv, c-dv, c-dv, c+dv]))
+        con.append(self._step([c-dv, c+dv, c+dv, c-dv]))
+        pos = self.sim.data.qpos
+        vel = self.sim.data.qvel
+        self.set_state(np.array([pos[0],pos[1],2,pos[3],0,0,pos[6]]),np.array([0.0]*6))
+        self.render()
+
+        con.append(self._step([c+dw, c-dw, c+dw, c-dw]))
+        con.append(self._step([c-dw, c+dw, c-dw, c+dw]))
+        pos = self.sim.data.qpos
+        vel = self.sim.data.qvel
+        self.set_state(np.array([pos[0],pos[1],2,pos[3],0,0,pos[6]]),np.array([0.0]*6))
+
         ob = self._get_obs()
-        notdone = np.isfinite(ob).all()
-        done = not notdone
+        
+        # print(self.sim.data.sensordata)
+
+        reward = self.compute_reward(ob['achieved_goal'],ob['desired_goal'])
+
+        notdone = np.isfinite(ob['observation']).all() \
+                  and abs(ob['observation'][0]) < 10.0 \
+                  and abs(ob['observation'][1]) < 10.0 \
+                  and abs(reward) > self.threshold 
+
+        con.append(self.sim.data.ncon)
+        collision = max(con) > prev_ncon
+
+        done = (not notdone) or collision
         return ob, reward, done, {}
 
     def compute_reward(self, achieved_goal, desired_goal):
@@ -75,10 +120,20 @@ class MujocoQuadEnv(Mujoco_Goal_Env, utils.EzPickle):
         action = np.clip(action, a_min=0, a_max=np.inf)
         return action
 
+    # def reset_model(self):
+    #     qpos = self.init_qpos
+    #     qvel = self.init_qvel
+    #     self.set_state(qpos, qvel)
+    #     return self._get_obs()
+
     def reset_model(self):
+        # script.run()
+        self.__init__()
+        
         qpos = self.init_qpos
         qvel = self.init_qvel
         self.set_state(qpos, qvel)
+        
         return self._get_obs()
 
     def reset(self):
@@ -86,17 +141,20 @@ class MujocoQuadEnv(Mujoco_Goal_Env, utils.EzPickle):
         ob = self.reset_model()
         # print('*',ob)
         return ob
-
     
     def _sample_goal(self):
         goal = self.np_random.uniform(-self.range, self.range, size=3)
         goal[2] = 2
         return goal.copy()
 
+    # def viewer_setup(self):
+    #     v = self.viewer
+    #     v.cam.trackbodyid = 0
+    #     v.cam.distance = self.model.stat.extent * 10
+
     def viewer_setup(self):
-        v = self.viewer
-        v.cam.trackbodyid = 0
-        v.cam.distance = self.model.stat.extent * 10
+        self.viewer.trackbodyid=0
+        self.viewer.cam.distance = self.model.stat.extent * 2
 
     @property
     def mass(self):

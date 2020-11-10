@@ -39,12 +39,12 @@ class Mujoco_Goal_Env(gym.GoalEnv):
             'video.frames_per_second': int(np.round(1.0 / self.dt))
         }
 
-        self.seed()
+        # self.seed()
 
         self.init_qpos = self.sim.data.qpos.ravel().copy()
         self.init_qvel = self.sim.data.qvel.ravel().copy()
 
-        self.goal = self._sample_goal()
+        # self.goal = self._sample_goal()
         
         self._set_action_space()
 
@@ -56,11 +56,14 @@ class Mujoco_Goal_Env(gym.GoalEnv):
 
 
 
+    # def _set_action_space(self):
+    #     bounds = self.model.actuator_ctrlrange.copy().astype(np.float32)
+    #     low, high = bounds.T
+    #     self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
+    #     return self.action_space
+
     def _set_action_space(self):
-        bounds = self.model.actuator_ctrlrange.copy().astype(np.float32)
-        low, high = bounds.T
-        self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
-        return self.action_space
+        self.action_space = spaces.Box(low=np.array([0, -1.0]), high=np.array([1, 1.0]), dtype=np.float32)
 
     def _set_observation_space(self, obs):
         self.observation_space = spaces.Dict(dict(

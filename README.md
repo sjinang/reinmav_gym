@@ -1,16 +1,4 @@
-### > check out new.py for playing with controller
-### > might have to change cwd_path in gym_reinmav/envs/mujoco/script.run according to your file location.
-### > keys are w,s,a,d,q,e and make sure to press them in the tkinter window
-#
-
-# reinmav-gym
-[![Build Status](https://travis-ci.org/ethz-asl/reinmav-gym.png?branch=master)](https://travis-ci.org/ethz-asl/reinmav-gym)
-
-`reinmav-gym` is a gym environment for developing mav controllers using the openai gym framework. The environment composes of two environments: `native` which has a built in simulator and `mujoco` which uses the mujoco simulator.
-- `native` environment has a built in dynamics 2D / 3D model that does not require any additional physics engine.
-- `mujoco` environment has a quadrotor model in the [mujoco](http://www.mujoco.org/) simulator for more complex environments
-
-<img src="gym_reinmav/resources/native_slungload.gif" width="400" /> <img src="gym_reinmav/resources/reinmav-gym-mujoco.gif" width="400" />
+# sjinang/reinmav-gym
 
 # Installation
 ## Requirements
@@ -59,7 +47,7 @@ pip install -e .
 ## Installing the reinmav-gym package
 1. Clone the package and cd into it
 ```
-git clone https://github.com/ethz-asl/reinmav-gym.git
+git clone https://github.com/sjinang/reinmav_gym.git
 cd reinmav-gym
 ```
 2. The environment is tested on python 3.6. Make sure you have the right python version when installing the environment
@@ -81,15 +69,6 @@ License: UNKNOWN
 Location: /Users/YOUR_INSTALLED_PATH/openai/venv/lib/python3.6/site-packages
 Requires: gym
 Required-by: 
-```
-A simple geometric controller is implemented to see if the quadrotor can fly properly.
-```sh
-$ cd reinmav-gym/test
-$ python test_quadrotor2d.py
-```
-or 
-```sh
-$ python test_quadrotor3d.py
 ```
 
 ## For mujoco env (optional)
@@ -123,22 +102,6 @@ $ pip3 install 'gym[all]'
 ```
 
 Note. mujoco200 (MuJoCo 2.0) is not supported yet.
-
-
-# Using the Environment
-The environment can be used as anyother gym environments. This can be done by doing the following in your script
-```
-import gym
-...
-
-env = gym.make('quadrotor3d-v0').unwrapped
-```
-`quadrotor3d-v0` is the environment ID that is registered in the gym environment. The list of environment ids in this repo can be found in `gym_reinmav/__init__.py' file.
-The environment can be also be tested using the openai baselines package, for example as the following.
-```
-python -m gym_reinmav.run --alg=ppo2 --env=quadrotor2d-v0 --network=mlp --play
-```
-For basic usages on `baslines`, refer to this [repo](https://github.com/openai/baselines)
 
 
 *****************************************************
