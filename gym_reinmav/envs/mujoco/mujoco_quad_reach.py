@@ -41,7 +41,7 @@ from gym_reinmav.envs.mujoco import script
 
 
 class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
-    def __init__(self, xml_name="quadrotor_env_modified.xml",version=0,range=10,reward_type='cont',threshold=0.5):
+    def __init__(self, xml_name="quadrotor_env_modified.xml",version=0,range=10,reward_type='sparse',threshold=0.5):
 
         self.range = range
         self.reward_type = reward_type
@@ -107,7 +107,7 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         d = np.linalg.norm(achieved_goal - desired_goal, axis=-1)
 
         if self.reward_type == 'sparse':
-            return -(d > self.distance_threshold).astype(np.float32)
+            return -(d > self.threshold).astype(np.float32)
         else:
             return -d
 

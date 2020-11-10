@@ -1,8 +1,8 @@
 # sjinang/reinmav-gym
 
 ## Environment IDs
-### MujocoQuadReach-v0
-### MujocoQuadForest-v0
+#### MujocoQuadReach-v0
+#### MujocoQuadForest-v0
 
 # Installation
 ## Requirements

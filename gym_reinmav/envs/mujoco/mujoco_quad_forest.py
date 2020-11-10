@@ -36,7 +36,7 @@ import os
 from gym_reinmav.envs.mujoco import MujocoQuadReachEnv
 
 class MujocoQuadForestEnv(MujocoQuadReachEnv):
-    def __init__(self,range=10,reward_type='cont',threshold=0.5):
+    def __init__(self):
         super(MujocoQuadForestEnv, self).__init__(version=1)
     
 
