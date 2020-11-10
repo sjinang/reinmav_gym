@@ -43,7 +43,7 @@
 		<light cutoff="100" diffuse="1 1 1" dir="0 0 -1" directional="true" exponent="1" pos="0 0 10" specular=".1 .1 .1" />
 		<light cutoff="100" diffuse="1 1 1" dir="0 0 1" directional="true" exponent="1" pos="0 0 0.25" specular=".1 .1 .1" />
 
-	<site pos="-5.2911003306013455 2.072677234536071 1.25" rgba="1.0 0. 0. 0.4" size="0.5 1.25" type="cylinder" /></worldbody>
+	<site pos="-6.035914584871255 -0.561507438833214 1.25" rgba="1.0 0. 0. 0.4" size="0.5 1.25" type="cylinder" /></worldbody>
 
 	<sensor> <rangefinder name="sens_0" site="site_sens_0" /> </sensor>
 

@@ -41,11 +41,12 @@ from gym_reinmav.envs.mujoco import script
 
 
 class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
-    def __init__(self, xml_name="quadrotor_env_modified.xml",version=0,range=10,reward_type='sparse',threshold=0.5):
+    def __init__(self, xml_name="quadrotor_env_modified.xml",version=0,range=10,reward_type='sparse',threshold=0.5,max_episode_steps=50):
 
         self.range = range
         self.reward_type = reward_type
         self.threshold = threshold
+        self.max_episode_steps = max_episode_steps
         
         self.seed()
 
