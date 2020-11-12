@@ -34,9 +34,11 @@
 import numpy as np
 import os
 from gym_reinmav.envs.mujoco import MujocoQuadReachEnv
+from gym_reinmav.envs.mujoco import script
 
 class MujocoQuadForestEnv(MujocoQuadReachEnv):
     def __init__(self):
-        super(MujocoQuadForestEnv, self).__init__(version=1)
+        script.run()
+        super(MujocoQuadForestEnv, self).__init__(xml_name="quadrotor_env_modified.xml")
     
 

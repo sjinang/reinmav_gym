@@ -6,7 +6,7 @@
 	<visual> <map znear="0.00005" /> </visual>
 
 	<worldbody>
-		<geom name="floor" pos="0 0 0" size="2 2 .2" type="plane"  conaffinity="1" rgba="0.75 0.75 0.75 1" condim="3"/>
+		<geom name="floor" pos="0 0 0" size="5 5 .2" type="plane"  conaffinity="1" rgba="0.75 0.75 0.75 1" condim="3"/>
 		<body name="quadrotor" pos="0 0 2" >
 			
 			<camera name="onbodycam_0" mode="fixed" pos="0 0.06 0.05" xyaxes="1 0 0 0 0 1" fovy='35'/>
@@ -39,6 +39,11 @@
 			<site name="qcY" type="box" pos="0.0 0.1 0.0" size="0.1 0.005 0.005"  quat = " 0.707  0.0  0.0    0.707"  rgba="0 1 0 1" />
 			<site name="qcZ" type="box" pos="0.0 0.0 0.1" size="0.1 0.005 0.005"  quat = "-0.707  0.0  0.707  0."     rgba="0 0 1 1" />
 		</body>
+
+		
+		<site name="goal_site" type="cylinder" pos="0 0 2" size="0.5 2" rgba="1 0 0 0.4"/>
+		<!--<joint name="goal_joint" type="free" pos="0 0 0"/>-->
+		
 		
 		<light cutoff="100" diffuse="1 1 1" dir="0 0 -1" directional="true" exponent="1" pos="0 0 10" specular=".1 .1 .1" />
 		<light cutoff="100" diffuse="1 1 1" dir="0 0 1" directional="true" exponent="1" pos="0 0 0.25" specular=".1 .1 .1" />

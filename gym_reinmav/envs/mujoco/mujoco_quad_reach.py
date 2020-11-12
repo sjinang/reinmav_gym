@@ -37,26 +37,29 @@ from gym import utils
 from gym.envs.mujoco import mujoco_env
 from gym import spaces
 from gym_reinmav.envs.mujoco.mujoco_goal_env import Mujoco_Goal_Env
-from gym_reinmav.envs.mujoco import script
 
 
 class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
-    def __init__(self, xml_name="quadrotor_env_modified.xml",version=0,range=10,reward_type='sparse',threshold=0.5,max_episode_steps=50):
+    def __init__(self, xml_name="quadrotor_env.xml",range_min=1,range_max=3,reward_type='sparse',threshold=0.5,_max_episode_steps=50):
 
-        self.range = range
+        self.range_min = range_min
+        self.range_max = range_max
         self.reward_type = reward_type
         self.threshold = threshold
-        self.max_episode_steps = max_episode_steps
+        self._max_episode_steps = _max_episode_steps # giving error for not using _ before
         
         self.seed()
-
-        self.goal = self._sample_goal()
-        script.run(version,self.goal,self.threshold)
+        self.goal = self._sample_goal() 
         
         xml_path = os.path.join(os.path.dirname(__file__), "./assets", xml_name)
 
         utils.EzPickle.__init__(self)
-        Mujoco_Goal_Env.__init__(self, xml_path, 6)
+        Mujoco_Goal_Env.__init__(self, xml_path, 9)
+
+        self.sim.model.site_pos[self.sim.model.site_name2id("goal_site")] = self.goal
+        ### enforcing initial state
+        self.set_state(np.array([0.0,0.0,2.0,1.0,0.0,0.0,0.0]),np.array([0.0]*6))
+
 
     def _step(self, a):
         self.do_simulation(self.clip_action(a), self.frame_skip)
@@ -77,7 +80,7 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         pos = self.sim.data.qpos
         vel = self.sim.data.qvel
         self.set_state(np.array([pos[0],pos[1],2,pos[3],0,0,pos[6]]),np.array([0.0]*6))
-        self.render()
+        # self.render()
 
         con.append(self._step([c+dw, c-dw, c+dw, c-dw]))
         con.append(self._step([c-dw, c+dw, c-dw, c+dw]))
@@ -89,13 +92,13 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         
         # print(self.sim.data.sensordata)
 
-        reward = self.compute_reward(ob['achieved_goal'],ob['desired_goal'])
+        reward, dist = self.compute_reward(ob['achieved_goal'],ob['desired_goal'])
 
         notdone = np.isfinite(ob['observation']).all() \
-                  and abs(ob['observation'][0]) < 10.0 \
-                  and abs(ob['observation'][1]) < 10.0 \
-                  and abs(reward) > self.threshold 
-
+                  and abs(ob['observation'][0]) < 5.0 \
+                  and abs(ob['observation'][1]) < 5.0 \
+                  and abs(dist) > self.threshold 
+        
         con.append(self.sim.data.ncon)
         collision = max(con) > prev_ncon
 
@@ -108,9 +111,9 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         d = np.linalg.norm(achieved_goal - desired_goal, axis=-1)
 
         if self.reward_type == 'sparse':
-            return -(d > self.threshold).astype(np.float32)
+            return -(d > self.threshold).astype(np.float32),d
         else:
-            return -d
+            return -d,d
 
     def clip_action(self, action):
         """
@@ -121,12 +124,6 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         action = np.clip(action, a_min=0, a_max=np.inf)
         return action
 
-    # def reset_model(self):
-    #     qpos = self.init_qpos
-    #     qvel = self.init_qvel
-    #     self.set_state(qpos, qvel)
-    #     return self._get_obs()
-
     def reset_model(self):
         # script.run()
         self.__init__()
@@ -134,6 +131,9 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         qpos = self.init_qpos
         qvel = self.init_qvel
         self.set_state(qpos, qvel)
+
+        ### enforcing intial conditions
+        self.set_state(np.array([0.0,0.0,2.0,1.0,0.0,0.0,0.0]),np.array([0.0]*6))
         
         return self._get_obs()
 
@@ -144,7 +144,10 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         return ob
     
     def _sample_goal(self):
-        goal = self.np_random.uniform(-self.range, self.range, size=3)
+        goal = self.np_random.uniform(-self.range_max, self.range_max, size=3)
+        while abs(goal[0])<self.range_min or abs(goal[1])<self.range_min:
+            goal = self.np_random.uniform(-self.range_max, self.range_max, size=3)
+        # goal = np.array([0,4,0])
         goal[2] = 2
         return goal.copy()
 
