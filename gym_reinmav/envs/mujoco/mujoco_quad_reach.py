@@ -58,7 +58,7 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
 
         self.sim.model.site_pos[self.sim.model.site_name2id("goal_site")] = self.goal
         ### enforcing initial state
-        self.set_state(np.array([0.0,0.0,2.0,1.0,0.0,0.0,0.0]),np.array([0.0]*6))
+        # self.set_state(np.array([0.0,0.0,2.0,1.0,0.0,0.0,0.0]),np.array([0.0]*6))
 
 
     def _step(self, a):
@@ -87,7 +87,7 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         pos = self.sim.data.qpos
         vel = self.sim.data.qvel
         self.set_state(np.array([pos[0],pos[1],2,pos[3],0,0,pos[6]]),np.array([0.0]*6))
-
+        
         ob = self._get_obs()
         
         # print(self.sim.data.sensordata)
@@ -103,7 +103,12 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         collision = max(con) > prev_ncon
 
         done = (not notdone) or collision
-        return ob, reward, done, {}
+
+        info = {
+            'is_success': (abs(dist) < self.threshold).astype(np.float32),
+        }
+        
+        return ob, reward, done, info
 
     def compute_reward(self, achieved_goal, desired_goal):
         # Compute distance between goal and the achieved goal.
@@ -128,12 +133,12 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         # script.run()
         self.__init__()
         
-        qpos = self.init_qpos
-        qvel = self.init_qvel
-        self.set_state(qpos, qvel)
+        # qpos = self.init_qpos
+        # qvel = self.init_qvel
+        # self.set_state(qpos, qvel)
 
         ### enforcing intial conditions
-        self.set_state(np.array([0.0,0.0,2.0,1.0,0.0,0.0,0.0]),np.array([0.0]*6))
+        # self.set_state(np.array([0.0,0.0,2.0,1.0,0.0,0.0,0.0]),np.array([0.0]*6))
         
         return self._get_obs()
 
@@ -142,6 +147,14 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         ob = self.reset_model()
         # print('*',ob)
         return ob
+
+    def _get_obs(self):
+        obs = np.concatenate([self.sim.data.qpos, self.sim.data.qvel]).ravel()
+        return {
+            'observation': obs.copy(),
+            'achieved_goal': obs[:3].copy(),
+            'desired_goal': self.goal.copy(),
+        }
     
     def _sample_goal(self):
         goal = self.np_random.uniform(-self.range_max, self.range_max, size=3)

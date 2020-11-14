@@ -1,241 +1,243 @@
-# import gym
-# import gym_reinmav
-# import numpy as np
-# from gym_reinmav.envs.mujoco.play import play
-
-
-# env = gym.make('MujocoQuadReach-v0')
-# orig = env.sim.data.qpos
-
-# for i in range(50):
-#     for j in range(10):
-#         env.render()
-#     action = env.action_space.sample()
-#     # action = np.array([1,0])
-#     # print(env.goal)
-#     # print(action)
-#     obs, rew, done, info = env.step(action)
-#     # print(i,obs['observation'][1],env.sim.data.qpos[1])
-#     if done:
-#         env.reset()
-
-import sys
-import multiprocessing
-import os.path as osp
 import gym
-from collections import defaultdict
-import tensorflow as tf
+import gym_reinmav
 import numpy as np
-import gym_reinmav 
-# import rl_algs
-
-from baselines.common.vec_env import VecFrameStack, VecNormalize
-from baselines.common.vec_env.vec_video_recorder import VecVideoRecorder
-from baselines.common.cmd_util import common_arg_parser, parse_unknown_args, make_vec_env, make_env
-from baselines.common.tf_util import get_session
-from baselines import logger
+from gym_reinmav.envs.mujoco.play import play
 
 
-from importlib import import_module
+env = gym.make('MujocoQuadReach-v0')
+orig = env.sim.data.qpos
 
-try:
-    from mpi4py import MPI
-except ImportError:
-    MPI = None
+for i in range(100000):
+    for j in range(10):
+        env.render()
+    action = env.action_space.sample()
+    action = np.array([1,0])
+    # print(env.goal)
+    # print(action)
+    obs, rew, done, info = env.step(action)
+    print(obs["observation"])
+    # print(action)
+    # print(i,obs['desired_goal'])
+    # if done:
+    #     env.reset()
 
-try:
-    import pybullet_envs
-except ImportError:
-    pybullet_envs = None
+# import sys
+# import multiprocessing
+# import os.path as osp
+# import gym
+# from collections import defaultdict
+# import tensorflow as tf
+# import numpy as np
+# import gym_reinmav 
+# # import rl_algs
 
-try:
-    import roboschool
-except ImportError:
-    roboschool = None
-
-_game_envs = defaultdict(set)
-for env in gym.envs.registry.all():
-    # TODO: solve this with regexes
-    env_type = env.entry_point.split(':')[0].split('.')[-1]
-    _game_envs[env_type].add(env.id)
-
-
-def train(args, extra_args):
-    env_type, env_id = get_env_type(args)
-    print('env_type: {}'.format(env_type))
-
-    total_timesteps = int(args.num_timesteps)
-    seed = args.seed
-
-    learn = get_learn_function(args.alg)
-    alg_kwargs = get_learn_function_defaults(args.alg, env_type)
-    alg_kwargs.update(extra_args)
-
-    env = build_env(args)
-    if args.save_video_interval != 0:
-        env = VecVideoRecorder(env, osp.join(logger.get_dir(), "videos"), record_video_trigger=lambda x: x % args.save_video_interval == 0, video_length=args.save_video_length)
-
-    if args.network:
-        alg_kwargs['network'] = args.network
-    else:
-        if alg_kwargs.get('network') is None:
-            alg_kwargs['network'] = get_default_network(env_type)
-
-    print('Training {} on {}:{} with arguments \n{}'.format(args.alg, env_type, env_id, alg_kwargs))
-
-    model = learn(
-        env=env,
-        seed=seed,
-        total_timesteps=total_timesteps,
-        **alg_kwargs
-    )
-
-    return model, env
+# from baselines.common.vec_env import VecFrameStack, VecNormalize
+# from baselines.common.vec_env.vec_video_recorder import VecVideoRecorder
+# from baselines.common.cmd_util import common_arg_parser, parse_unknown_args, make_vec_env, make_env
+# from baselines.common.tf_util import get_session
+# from baselines import logger
 
 
-def build_env(args):
-    ncpu = multiprocessing.cpu_count()
-    if sys.platform == 'darwin': ncpu //= 2
-    nenv = args.num_env or ncpu
-    alg = args.alg
-    seed = args.seed
+# from importlib import import_module
 
-    env_type, env_id = get_env_type(args)
+# try:
+#     from mpi4py import MPI
+# except ImportError:
+#     MPI = None
+
+# try:
+#     import pybullet_envs
+# except ImportError:
+#     pybullet_envs = None
+
+# try:
+#     import roboschool
+# except ImportError:
+#     roboschool = None
+
+# _game_envs = defaultdict(set)
+# for env in gym.envs.registry.all():
+#     # TODO: solve this with regexes
+#     env_type = env.entry_point.split(':')[0].split('.')[-1]
+#     _game_envs[env_type].add(env.id)
+
+
+# def train(args, extra_args):
+#     env_type, env_id = get_env_type(args)
+#     print('env_type: {}'.format(env_type))
+
+#     total_timesteps = int(args.num_timesteps)
+#     seed = args.seed
+
+#     learn = get_learn_function(args.alg)
+#     alg_kwargs = get_learn_function_defaults(args.alg, env_type)
+#     alg_kwargs.update(extra_args)
+
+#     env = build_env(args)
+#     if args.save_video_interval != 0:
+#         env = VecVideoRecorder(env, osp.join(logger.get_dir(), "videos"), record_video_trigger=lambda x: x % args.save_video_interval == 0, video_length=args.save_video_length)
+
+#     if args.network:
+#         alg_kwargs['network'] = args.network
+#     else:
+#         if alg_kwargs.get('network') is None:
+#             alg_kwargs['network'] = get_default_network(env_type)
+
+#     print('Training {} on {}:{} with arguments \n{}'.format(args.alg, env_type, env_id, alg_kwargs))
+
+#     model = learn(
+#         env=env,
+#         seed=seed,
+#         total_timesteps=total_timesteps,
+#         **alg_kwargs
+#     )
+
+#     return model, env
+
+
+# def build_env(args):
+#     ncpu = multiprocessing.cpu_count()
+#     if sys.platform == 'darwin': ncpu //= 2
+#     nenv = args.num_env or ncpu
+#     alg = args.alg
+#     seed = args.seed
+
+#     env_type, env_id = get_env_type(args)
     
-    config = tf.ConfigProto(allow_soft_placement=True,
-                            intra_op_parallelism_threads=1,
-                            inter_op_parallelism_threads=1)
-    config.gpu_options.allow_growth = True
-    get_session(config=config)
+#     config = tf.ConfigProto(allow_soft_placement=True,
+#                             intra_op_parallelism_threads=1,
+#                             inter_op_parallelism_threads=1)
+#     config.gpu_options.allow_growth = True
+#     get_session(config=config)
 
-    flatten_dict_observations = alg not in {'her'}
-    env = make_vec_env(env_id, env_type, args.num_env or 1, seed, reward_scale=args.reward_scale, flatten_dict_observations=flatten_dict_observations)
+#     flatten_dict_observations = alg not in {'her'}
+#     env = make_vec_env(env_id, env_type, args.num_env or 1, seed, reward_scale=args.reward_scale, flatten_dict_observations=flatten_dict_observations)
 
-    if env_type == 'mujoco':
-        env = VecNormalize(env)
+#     if env_type == 'mujoco':
+#         env = VecNormalize(env)
 
-    return env
-
-
-def get_env_type(args):
-    env_id = args.env
-
-    if args.env_type is not None:
-        return args.env_type, env_id
-
-    # Re-parse the gym registry, since we could have new envs since last time.
-    for env in gym.envs.registry.all():
-        env_type = env.entry_point.split(':')[0].split('.')[-1]
-        _game_envs[env_type].add(env.id)  # This is a set so add is idempotent
-
-    if env_id in _game_envs.keys():
-        env_type = env_id
-        env_id = [g for g in _game_envs[env_type]][0]
-    else:
-        env_type = None
-        for g, e in _game_envs.items():
-            if env_id in e:
-                env_type = g
-                break
-        assert env_type is not None, 'env_id {} is not recognized in env types'.format(env_id, _game_envs.keys())
-
-    return env_type, env_id
+#     return env
 
 
-def get_default_network(env_type):
-    return 'mlp'
+# def get_env_type(args):
+#     env_id = args.env
 
-def get_alg_module(alg, submodule=None):
-    submodule = submodule or alg
-    # try:
-    #     # first try to import the alg module from baselines
-    #     alg_module = import_module('.'.join(['baselines', alg, submodule]))
-    # except ImportError:
-    #     # then from rl_algs
-    #     alg_module = import_module('.'.join(['rl_' + 'algs', alg, submodule]))
-    alg_module = import_module('.'.join(['baselines', alg, submodule]))
-    return alg_module
+#     if args.env_type is not None:
+#         return args.env_type, env_id
 
+#     # Re-parse the gym registry, since we could have new envs since last time.
+#     for env in gym.envs.registry.all():
+#         env_type = env.entry_point.split(':')[0].split('.')[-1]
+#         _game_envs[env_type].add(env.id)  # This is a set so add is idempotent
 
-def get_learn_function(alg):
-    return get_alg_module(alg).learn
+#     if env_id in _game_envs.keys():
+#         env_type = env_id
+#         env_id = [g for g in _game_envs[env_type]][0]
+#     else:
+#         env_type = None
+#         for g, e in _game_envs.items():
+#             if env_id in e:
+#                 env_type = g
+#                 break
+#         assert env_type is not None, 'env_id {} is not recognized in env types'.format(env_id, _game_envs.keys())
 
-
-def get_learn_function_defaults(alg, env_type):
-    try:
-        alg_defaults = get_alg_module(alg, 'defaults')
-        kwargs = getattr(alg_defaults, env_type)()
-    except (ImportError, AttributeError):
-        kwargs = {}
-    return kwargs
+#     return env_type, env_id
 
 
+# def get_default_network(env_type):
+#     return 'mlp'
 
-def parse_cmdline_kwargs(args):
-    '''
-    convert a list of '='-spaced command-line arguments to a dictionary, evaluating python objects when possible
-    '''
-    def parse(v):
+# def get_alg_module(alg, submodule=None):
+#     submodule = submodule or alg
+#     # try:
+#     #     # first try to import the alg module from baselines
+#     #     alg_module = import_module('.'.join(['baselines', alg, submodule]))
+#     # except ImportError:
+#     #     # then from rl_algs
+#     #     alg_module = import_module('.'.join(['rl_' + 'algs', alg, submodule]))
+#     alg_module = import_module('.'.join(['baselines', alg, submodule]))
+#     return alg_module
 
-        assert isinstance(v, str)
-        try:
-            return eval(v)
-        except (NameError, SyntaxError):
-            return v
 
-    return {k: parse(v) for k,v in parse_unknown_args(args).items()}
+# def get_learn_function(alg):
+#     return get_alg_module(alg).learn
+
+
+# def get_learn_function_defaults(alg, env_type):
+#     try:
+#         alg_defaults = get_alg_module(alg, 'defaults')
+#         kwargs = getattr(alg_defaults, env_type)()
+#     except (ImportError, AttributeError):
+#         kwargs = {}
+#     return kwargs
 
 
 
-def main(args):
-    # configure logger, disable logging in child MPI processes (with rank > 0)
+# def parse_cmdline_kwargs(args):
+#     '''
+#     convert a list of '='-spaced command-line arguments to a dictionary, evaluating python objects when possible
+#     '''
+#     def parse(v):
 
-    arg_parser = common_arg_parser()
-    args, unknown_args = arg_parser.parse_known_args(args)
-    extra_args = parse_cmdline_kwargs(unknown_args)
+#         assert isinstance(v, str)
+#         try:
+#             return eval(v)
+#         except (NameError, SyntaxError):
+#             return v
 
-    # if args.extra_import is not None:
-    #     import_module(args.extra_import)
+#     return {k: parse(v) for k,v in parse_unknown_args(args).items()}
 
-    if MPI is None or MPI.COMM_WORLD.Get_rank() == 0:
-        rank = 0
-        logger.configure()
-    else:
-        logger.configure(format_strs=[])
-        rank = MPI.COMM_WORLD.Get_rank()
 
-    model, env = train(args, extra_args)
 
-    if args.save_path is not None and rank == 0:
-        save_path = osp.expanduser(args.save_path)
-        model.save(save_path)
+# def main(args):
+#     # configure logger, disable logging in child MPI processes (with rank > 0)
 
-    if args.play:
-        logger.log("Running trained model")
-        obs = env.reset()
+#     arg_parser = common_arg_parser()
+#     args, unknown_args = arg_parser.parse_known_args(args)
+#     extra_args = parse_cmdline_kwargs(unknown_args)
 
-        state = model.initial_state if hasattr(model, 'initial_state') else None
-        dones = np.zeros((1,))
+#     # if args.extra_import is not None:
+#     #     import_module(args.extra_import)
 
-        episode_rew = 0
-        while True:
-            if state is not None:
-                actions, _, state, _ = model.step(obs,S=state, M=dones)
-            else:
-                actions, _, _, _ = model.step(obs)
+#     if MPI is None or MPI.COMM_WORLD.Get_rank() == 0:
+#         rank = 0
+#         logger.configure()
+#     else:
+#         logger.configure(format_strs=[])
+#         rank = MPI.COMM_WORLD.Get_rank()
 
-            obs, rew, done, _ = env.step(actions)
-            episode_rew += rew[0]
-            env.render()
-            done = done.any() if isinstance(done, np.ndarray) else done
-            if done:
-                print(f'episode_rew={episode_rew}')
-                episode_rew = 0
-                obs = env.reset()
+#     model, env = train(args, extra_args)
 
-    env.close()
+#     if args.save_path is not None and rank == 0:
+#         save_path = osp.expanduser(args.save_path)
+#         model.save(save_path)
 
-    return model
+#     if args.play:
+#         logger.log("Running trained model")
+#         obs = env.reset()
 
-if __name__ == '__main__':
-    main(sys.argv)
+#         state = model.initial_state if hasattr(model, 'initial_state') else None
+#         dones = np.zeros((1,))
+
+#         episode_rew = 0
+#         while True:
+#             if state is not None:
+#                 actions, _, state, _ = model.step(obs,S=state, M=dones)
+#             else:
+#                 actions, _, _, _ = model.step(obs)
+
+#             obs, rew, done, _ = env.step(actions)
+#             episode_rew += rew[0]
+#             env.render()
+#             done = done.any() if isinstance(done, np.ndarray) else done
+#             if done:
+#                 print(f'episode_rew={episode_rew}')
+#                 episode_rew = 0
+#                 obs = env.reset()
+
+#     env.close()
+
+#     return model
+
+# if __name__ == '__main__':
+#     main(sys.argv)

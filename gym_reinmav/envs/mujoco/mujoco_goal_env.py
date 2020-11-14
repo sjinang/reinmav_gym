@@ -40,7 +40,7 @@ class Mujoco_Goal_Env(gym.GoalEnv):
         }
 
         # self.seed()
-
+    
         self.init_qpos = self.sim.data.qpos.ravel().copy()
         self.init_qvel = self.sim.data.qvel.ravel().copy()
 
@@ -48,9 +48,11 @@ class Mujoco_Goal_Env(gym.GoalEnv):
         
         self._set_action_space()
 
+        ### because of this, we don't get our defined initial condn so we'll have to enforce them at last in __init__ of env itself
         action = self.action_space.sample()
         observation, _reward, done, _info = self.step(action)
         assert not done
+        self.set_state(self.init_qpos,self.init_qvel) ### enforcing initial state
 
         self._set_observation_space(observation)
 
@@ -190,9 +192,6 @@ class Mujoco_Goal_Env(gym.GoalEnv):
         raise NotImplementedError()
     
     def _get_obs(self):
-        obs = np.concatenate([self.sim.data.qpos, self.sim.data.qvel]).ravel()
-        return {
-            'observation': obs.copy(),
-            'achieved_goal': obs[:3].copy(),
-            'desired_goal': self.goal.copy(),
-        }
+        """get observation
+        """
+        raise NotImplementedError()
