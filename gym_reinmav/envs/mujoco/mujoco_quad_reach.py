@@ -34,7 +34,7 @@
 import numpy as np
 import os
 from gym import utils
-from gym.envs.mujoco import mujoco_env
+# from gym.envs.mujoco import mujoco_env
 from gym import spaces
 from gym_reinmav.envs.mujoco.mujoco_goal_env import Mujoco_Goal_Env
 
@@ -92,7 +92,8 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         
         # print(self.sim.data.sensordata)
 
-        reward, dist = self.compute_reward(ob['achieved_goal'],ob['desired_goal'])
+        reward = self.compute_reward(ob['achieved_goal'],ob['desired_goal'],{})
+        dist = np.linalg.norm(ob['achieved_goal'] - ob['desired_goal'], axis=-1)
 
         notdone = np.isfinite(ob['observation']).all() \
                   and abs(ob['observation'][0]) < 5.0 \
@@ -110,15 +111,15 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         
         return ob, reward, done, info
 
-    def compute_reward(self, achieved_goal, desired_goal):
+    def compute_reward(self, achieved_goal, desired_goal,info=None):
         # Compute distance between goal and the achieved goal.
         assert achieved_goal.shape == desired_goal.shape
         d = np.linalg.norm(achieved_goal - desired_goal, axis=-1)
 
         if self.reward_type == 'sparse':
-            return -(d > self.threshold).astype(np.float32),d
+            return -(d > self.threshold).astype(np.float32)
         else:
-            return -d,d
+            return -d
 
     def clip_action(self, action):
         """
