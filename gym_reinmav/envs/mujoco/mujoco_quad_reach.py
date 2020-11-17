@@ -40,13 +40,13 @@ from gym_reinmav.envs.mujoco.mujoco_goal_env import Mujoco_Goal_Env
 
 
 class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
-    def __init__(self, xml_name="quadrotor_env.xml",range_min=1,range_max=3,reward_type='sparse',threshold=0.5,_max_episode_steps=50):
+    def __init__(self, xml_name="quadrotor_env.xml",range_min=1,range_max=2,reward_type='sparse',threshold=0.5,max_episode_steps=50):
 
         self.range_min = range_min
         self.range_max = range_max
         self.reward_type = reward_type
         self.threshold = threshold
-        self._max_episode_steps = _max_episode_steps # giving error for not using _ before
+        self._max_episode_steps = max_episode_steps # giving error for not using _ before
         
         self.seed()
         self.goal = self._sample_goal() 

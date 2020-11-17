@@ -7,7 +7,7 @@ from gym_reinmav.envs.mujoco.play import play
 env = gym.make('MujocoQuadReach-v0')
 orig = env.sim.data.qpos
 
-for i in range(100000):
+for i in range(50):
     for j in range(10):
         env.render()
     action = env.action_space.sample()
@@ -15,7 +15,7 @@ for i in range(100000):
     # print(env.goal)
     # print(action)
     obs, rew, done, info = env.step(action)
-    print(obs["observation"])
+    print(i,obs["observation"][1])
     # print(action)
     # print(i,obs['desired_goal'])
     # if done:
