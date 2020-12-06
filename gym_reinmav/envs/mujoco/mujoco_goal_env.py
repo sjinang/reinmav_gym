@@ -65,7 +65,8 @@ class Mujoco_Goal_Env(gym.GoalEnv):
     #     return self.action_space
 
     def _set_action_space(self):
-        self.action_space = spaces.Box(low=np.array([0, -1.0]), high=np.array([1, 1.0]), dtype=np.float32)
+        self.action_space = spaces.Box(low=np.array([0.0, -1.0]), high=np.array([1.0, 1.0]), dtype=np.float32)
+        return self.action_space
 
     def _set_observation_space(self, obs):
         self.observation_space = spaces.Dict(dict(

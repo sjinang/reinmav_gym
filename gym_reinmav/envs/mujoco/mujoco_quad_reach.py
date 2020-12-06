@@ -40,7 +40,9 @@ from gym_reinmav.envs.mujoco.mujoco_goal_env import Mujoco_Goal_Env
 
 
 class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
-    def __init__(self, xml_name="quadrotor_env.xml",range_min=1,range_max=2,reward_type='sparse',threshold=0.5,max_episode_steps=50):
+    def __init__(self, xml_name="quadrotor_env.xml",
+                reward_type='sparse',max_episode_steps=50,
+                range_min=1,range_max=2,threshold=0.5):
 
         self.range_min = range_min
         self.range_max = range_max
@@ -66,7 +68,10 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         return self.sim.data.ncon
     
     def step(self, a):
-        dv = 0.15*a[0]
+        assert ((a[0]+1)/2)>-0.00001
+        
+        dv = 0.15*((a[0]+1)/2) #Only forward velocity HER due to max_u parameter in config of HER, don't use this with action_sample
+        # dv = 0.15*a[0]
         dw = 0.25*a[1]
         c = 0.73575
         
@@ -108,6 +113,9 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
         info = {
             'is_success': (abs(dist) < self.threshold).astype(np.float32),
         }
+
+        # for _ in range(50):
+        #     self.render()
         
         return ob, reward, done, info
 
@@ -132,11 +140,14 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
 
     def reset_model(self):
         # script.run()
-        self.__init__()
+        # self.__init__()
         
-        # qpos = self.init_qpos
-        # qvel = self.init_qvel
-        # self.set_state(qpos, qvel)
+        qpos = self.init_qpos
+        qvel = self.init_qvel
+        self.set_state(qpos, qvel)
+
+        self.goal = self._sample_goal()
+        self.sim.model.site_pos[self.sim.model.site_name2id("goal_site")] = self.goal
 
         ### enforcing intial conditions
         # self.set_state(np.array([0.0,0.0,2.0,1.0,0.0,0.0,0.0]),np.array([0.0]*6))
@@ -159,10 +170,12 @@ class MujocoQuadReachEnv(Mujoco_Goal_Env, utils.EzPickle):
     
     def _sample_goal(self):
         goal = self.np_random.uniform(-self.range_max, self.range_max, size=3)
-        while abs(goal[0])<self.range_min or abs(goal[1])<self.range_min:
+        while np.sqrt((goal[0]**2)+(goal[1]**2))<self.range_min:
             goal = self.np_random.uniform(-self.range_max, self.range_max, size=3)
         # goal = np.array([0,4,0])
         goal[2] = 2
+        # Forward Goal
+        # goal[1] = abs(goal[1]) 
         return goal.copy()
 
     # def viewer_setup(self):
